@@ -1,0 +1,131 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GREENORA Admin</title><style>
+:root{font-family:system-ui;color:#22382f;background:#f5f7f3}*{box-sizing:border-box}body{margin:0}header{background:#173c30;color:white;padding:19px 4%;display:flex;justify-content:space-between;align-items:center}h1{font:normal 26px Georgia,serif;margin:0}main{max-width:1280px;margin:28px auto;padding:0 20px}.panel{background:white;border:1px solid #e0e8e0;border-radius:15px;padding:22px;margin:16px 0;box-shadow:0 5px 20px #15301b0a}.muted{color:#728077;font-size:13px}input,select,textarea{border:1px solid #cdd9cf;border-radius:9px;padding:11px;font:inherit;max-width:100%}button{border:0;background:#24523e;color:white;border-radius:9px;padding:10px 14px;cursor:pointer}button.secondary{background:#e7f0e9;color:#244536}.form{display:flex;gap:10px;flex-wrap:wrap}.form input{flex:1;min-width:170px}.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{padding:17px;background:#eef5ee;border-radius:13px}.stat b{font-size:27px;display:block}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:13px;border-bottom:1px solid #e7ece7;text-align:left;vertical-align:top}th{background:#f3f6f3}.controls{display:grid;grid-template-columns:1fr 130px 120px;gap:7px;min-width:380px}.controls textarea{grid-column:1/-1;width:100%;min-height:45px}.controls button{grid-column:1/-1}.tag{padding:5px 8px;border-radius:7px;background:#e6efe8;display:inline-block}.hidden{display:none!important}.notice{color:#b05c19;font-size:13px}#toast{position:fixed;bottom:16px;right:16px;background:#1a4334;color:white;padding:14px;border-radius:12px;display:none}@media(max-width:650px){.statrow{grid-template-columns:1fr}.controls{min-width:280px;grid-template-columns:1fr 1fr}.form{display:grid}}
+
+.unified-nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px;border-bottom:1px solid #d9e4da;padding-bottom:14px}
+.unified-nav .nav-button{background:#eaf0eb;color:#234b39;border:1px solid #d9e4da;padding:11px 13px;font-weight:600}
+.unified-nav .nav-button.active{background:#1d4b37;color:white;border-color:#1d4b37}
+#operationsSection .panel{min-height:750px}
+@media(max-width:650px){.unified-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.unified-nav .nav-button{font-size:12px;padding:10px 6px}#heroManager>div{grid-template-columns:1fr!important}#operationsFrame{height:1450px!important}}
+</style><style>
+/* GREENORA V32 - Unicode Vietnamese typography; local fonts avoid missing glyphs. */
+html{font-synthesis:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body,button,input,select,textarea,option,table{font-family:"Segoe UI",Tahoma,Arial,"Noto Sans",sans-serif!important;font-kerning:normal}
+body{letter-spacing:normal!important;line-height:1.65}
+h1,h2,h3,h4,h5,h6,.hero h1,.section h2,.banner h2,.local-destination-hero h1,.detail-top h2,.detail-copy h3,.detail-reserve h3,.card h3,.service-feature h3,.listing-preview h2,.logo{font-family:"Segoe UI",Tahoma,Arial,"Noto Sans",sans-serif!important;letter-spacing:normal!important;overflow-wrap:break-word}
+.hero h1{font-weight:600;line-height:1.16}
+.section h2,.banner h2,.detail-top h2{font-weight:600;line-height:1.25}
+.logo{font-weight:750}
+.eyebrow,.hero-search-label{letter-spacing:.1em!important}
+@supports (font-variation-settings:normal){body{font-feature-settings:"kern" 1}}
+</style></head><body><header><h1>GREENORA <span style="color:#e6c991">Quản trị</span></h1><div><span id="who"></span> <button class="secondary hidden" id="logout" onclick="logout()">Đăng xuất</button></div></header><main>
+<section class="panel" id="loginBox"><h2>Đăng nhập quản trị</h2><p class="muted">Chỉ dành cho nhân sự GREENORA. Tài khoản được tạo trên máy chủ.</p><form class="form" onsubmit="login(event)"><input id="username" placeholder="Tên đăng nhập" required autocomplete="username"><input id="password" type="password" placeholder="Mật khẩu" required autocomplete="current-password"><button>Đăng nhập</button></form><p id="loginError" class="notice"></p></section>
+<div id="app" class="hidden">
+<nav class="unified-nav" aria-label="Các chức năng quản trị">
+<button type="button" class="nav-button active" data-section="inbox" onclick="openSection('inbox')">Tổng quan & yêu cầu</button>
+<button type="button" class="nav-button" data-section="partners" onclick="openSection('partners')">Chủ nhà & đối tác</button>
+<button type="button" class="nav-button" data-section="contracts" onclick="openSection('contracts')">Hợp đồng</button>
+<button type="button" class="nav-button" data-section="apartments" onclick="openSection('apartments')">Căn hộ</button>
+<button type="button" class="nav-button" data-section="reservations" onclick="openSection('reservations')">Lịch phòng</button>
+<button type="button" class="nav-button" data-section="payments" onclick="openSection('payments')">Thanh toán</button>
+<button type="button" class="nav-button" data-section="hero" onclick="openSection('hero')">Hình ảnh website</button>
+<button type="button" class="nav-button" data-section="ai" onclick="openSection('ai')">AI Concierge</button>
+<button type="button" class="nav-button" data-section="users" onclick="openSection('users')">Nhân sự</button>
+</nav>
+<div id="inboxSection">
+</div><div id="heroSection" class="hidden"><section class="panel" id="heroManager">
+ <h2>Ảnh banner trang chủ</h2>
+ <p class="muted">Tải ảnh từ máy tính, xem trước rồi nhấn <b>Lưu & xuất bản</b>. Ảnh mới sẽ xuất hiện trên trang chủ cho mọi người dùng cùng máy chủ.</p>
+ <div style="display:grid;grid-template-columns:minmax(200px,1fr) minmax(240px,1.4fr);gap:16px;align-items:start">
+ <div>
+  <label for="heroFile">Chọn ảnh banner (JPG / PNG / WebP, tối đa 5 MB)</label>
+  <input type="file" id="heroFile" accept="image/jpeg,image/png,image/webp" style="display:block;width:100%;margin:12px 0" onchange="previewHero(event)">
+  <p class="muted">Khuyến nghị ảnh ngang 1920 × 800 px hoặc lớn hơn. Chữ tiêu đề và ô tìm kiếm vẫn giữ nguyên.</p>
+  <button onclick="publishHero()">Lưu & xuất bản</button>
+  <button class="secondary" onclick="resetHero()">Khôi phục ảnh mặc định</button>
+  <p id="heroStatus" role="status" class="muted"></p>
+ </div>
+ <div>
+  <div style="font-size:13px;margin-bottom:8px">Xem trước banner</div>
+  <div id="heroPreview" style="min-height:210px;border-radius:12px;background:linear-gradient(90deg,#102b24dd,#102b2444),url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1800') center/cover;display:flex;align-items:center;padding:24px;color:white">
+   <div><div style="letter-spacing:2px;font-size:11px">GREENORA · PREMIUM BOUTIQUE LIVING</div><div style="font:normal 35px Georgia,serif;margin:12px 0">Về nhà của bạn!</div><div>Designed to feel like home.</div></div>
+  </div>
+ </div>
+ </div>
+</section></div>
+<div id="inboxContent"><div class="statrow"><div class="stat">Chờ xử lý<b id="pending">0</b></div><div class="stat">Đang xử lý<b id="processing">0</b></div><div class="stat">Hoàn thành<b id="completed">0</b></div></div>
+<section class="panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">Hộp thư yêu cầu dịch vụ</h2><p class="muted">Tự động làm mới 10 giây/lần khi trang đang mở.</p></div><div><button class="secondary" onclick="refresh()">Làm mới</button> <button onclick="readNotifications()">Đã xem thông báo (<span id="unread">0</span>)</button></div></div><div class="tablewrap"><table><thead><tr><th>Mã / nguồn</th><th>Dịch vụ / thời gian</th><th>Khách hàng</th><th>Yêu cầu</th><th>Xử lý / báo giá</th></tr></thead><tbody id="items"></tbody></table></div></section>
+</div><div id="usersSection" class="hidden"><section class="panel" id="userPanel"><h2>Tạo tài khoản nhân sự</h2><p class="muted">Admin: toàn quyền · Reception: tiếp nhận và xử lý đơn · Viewer: chỉ xem.</p><form class="form" onsubmit="createUser(event)"><input name="username" placeholder="Tên đăng nhập" required><input name="password" type="password" placeholder="Mật khẩu tối thiểu 12 ký tự" required minlength="12"><select name="role"><option value="reception">Reception</option><option value="viewer">Viewer</option><option value="admin">Admin</option></select><button>Tạo nhân sự</button></form></section></div>
+<div id="operationsSection" class="hidden"><div class="panel" style="padding:12px"><iframe id="operationsFrame" title="Điều hành GREENORA" style="display:block;width:100%;height:1100px;border:0;border-radius:12px;background:white" loading="lazy"></iframe></div></div>
+</div></main><div id="toast"></div>
+<script>
+let me=null,lastNotification=0;
+const $=id=>document.getElementById(id);
+function notify(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3500)}
+async function api(url,opts={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...opts});const d=await r.json();if(!r.ok)throw Error(d.error||'Error');return d}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function show(){const yes=!!me;$('loginBox').classList.toggle('hidden',yes);$('app').classList.toggle('hidden',!yes);$('logout').classList.toggle('hidden',!yes);$('who').textContent=yes?me.username+' · '+me.role:'';$('userPanel').classList.toggle('hidden',!yes||me.role!=='admin');$('heroManager').classList.toggle('hidden',!yes||me.role!=='admin');document.querySelector('[data-section=hero]').classList.toggle('hidden',!yes||me.role!=='admin');document.querySelector('[data-section=users]').classList.toggle('hidden',!yes||me.role!=='admin')}
+async function login(e){e.preventDefault();try{const d=await api('/api/login',{method:'POST',body:JSON.stringify({username:$('username').value,password:$('password').value})});me=d.user;show();openSection('inbox');refresh()}catch(e){$('loginError').textContent=e.message}}
+async function logout(){await api('/api/logout',{method:'POST',body:'{}'});me=null;show();openSection('inbox')}
+async function refresh(){if(!me)return;try{
+ const [r,n]=await Promise.all([api('/api/requests'),api('/api/notifications')]);
+ const items=r.items;$('pending').textContent=items.filter(x=>x.status==='pending').length;$('processing').textContent=items.filter(x=>['processing','confirmed'].includes(x.status)).length;$('completed').textContent=items.filter(x=>x.status==='completed').length;
+ $('unread').textContent=n.items.length;if(n.items.length>lastNotification&&lastNotification!==0)notify('GREENORA có yêu cầu mới!');lastNotification=n.items.length;
+ $('items').innerHTML=items.length?items.map(x=>`<tr><td>#${x.id}<br><span class="muted">${esc(x.source)}</span></td><td><b>${esc(x.service)}</b><br>${esc(x.requested_date)} ${esc(x.requested_time)}<br><small>${new Date(x.created_at*1000).toLocaleString('vi-VN')}</small></td><td>${esc(x.name)}<br><a href="tel:${esc(x.contact)}">${esc(x.contact)}</a><br>${esc(x.building)} ${esc(x.room)}</td><td style="max-width:290px;white-space:normal;overflow-wrap:anywhere">${esc(x.notes)}</td><td>${me.role==='viewer'?`<span class="tag">${esc(x.status)}</span><br>${x.quoted_total??x.estimated_total??0} VNĐ`:`<div class="controls"><select id="status_${x.id}">${['pending','processing','confirmed','completed','cancelled'].map(s=>`<option value="${s}" ${x.status===s?'selected':''}>${s}</option>`).join('')}</select><input id="quote_${x.id}" type="number" min="0" value="${x.quoted_total??x.estimated_total??0}" aria-label="Báo giá VNĐ"><textarea id="note_${x.id}" aria-label="Ghi chú nội bộ" placeholder="Ghi chú nội bộ">${esc(x.admin_note)}</textarea><button onclick="updateRequest(${x.id})">Lưu thay đổi</button></div>`}</td></tr>`).join(''):'<tr><td colspan="5">Chưa có yêu cầu.</td></tr>';
+ }catch(e){notify('Không thể tải dữ liệu: '+e.message)}}
+async function updateRequest(id){try{await api('/api/requests/'+id+'/update',{method:'POST',body:JSON.stringify({status:$('status_'+id).value,quoted_total:$('quote_'+id).value,admin_note:$('note_'+id).value})});notify('Đã cập nhật yêu cầu #'+id);refresh()}catch(e){notify(e.message)}}
+async function readNotifications(){await api('/api/notifications/read',{method:'POST',body:'{}'});lastNotification=0;refresh()}
+async function createUser(e){e.preventDefault();try{const d=Object.fromEntries(new FormData(e.target));await api('/api/users',{method:'POST',body:JSON.stringify(d)});notify('Đã tạo tài khoản');e.target.reset()}catch(e){notify(e.message)}}
+(async()=>{try{me=(await api('/api/me')).user;show();if(me)refresh()}catch{show()}})();setInterval(()=>{if(me&&!document.hidden)refresh()},10000);
+ 
+let heroData=null;
+async function loadHero(){
+ try{
+  const r=await fetch('/api/public/hero',{cache:'no-store'});
+  const d=await r.json();
+  if(d.url)document.getElementById('heroPreview').style.backgroundImage='linear-gradient(90deg,#102b24dd,#102b2444),url("'+d.url+'")';
+ }catch(e){}
+}
+function previewHero(event){
+ const file=event.target.files[0];heroData=null;
+ if(!file)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5000000){document.getElementById('heroStatus').textContent='Chọn JPG, PNG hoặc WebP nhỏ hơn 5 MB.';return}
+ const reader=new FileReader();
+ reader.onload=()=>{heroData=reader.result;document.getElementById('heroPreview').style.backgroundImage='linear-gradient(90deg,#102b24dd,#102b2444),url("'+heroData+'")';document.getElementById('heroStatus').textContent='Đã chọn ảnh. Nhấn Lưu & xuất bản để cập nhật.'};
+ reader.readAsDataURL(file);
+}
+async function publishHero(){
+ if(!heroData){document.getElementById('heroStatus').textContent='Hãy chọn ảnh trước.';return}
+ try{await api('/api/admin/hero',{method:'POST',body:JSON.stringify({image:heroData})});heroData=null;document.getElementById('heroFile').value='';document.getElementById('heroStatus').textContent='Đã xuất bản. Tải lại trang chủ để xem ảnh mới.'}
+ catch(e){document.getElementById('heroStatus').textContent=e.message}
+}
+async function resetHero(){
+ if(!confirm('Khôi phục ảnh banner mặc định?'))return;
+ try{await api('/api/admin/hero/reset',{method:'POST',body:'{}'});heroData=null;document.getElementById('heroFile').value='';document.getElementById('heroPreview').style.backgroundImage="linear-gradient(90deg,#102b24dd,#102b2444),url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1800')";document.getElementById('heroStatus').textContent='Đã khôi phục ảnh mặc định.'}
+ catch(e){document.getElementById('heroStatus').textContent=e.message}
+}
+loadHero();
+
+// V33: one unified navigation; operations functionality remains isolated in its own same-origin module.
+let currentSection='inbox';
+const operationalSections=['partners','contracts','apartments','reservations','payments','ai'];
+function openSection(section){
+ if(!['inbox','hero','users',...operationalSections].includes(section))section='inbox';
+ if(me && me.role!=='admin' && (section==='hero'||section==='users'))section='inbox';
+ currentSection=section;
+ const ops=operationalSections.includes(section);
+ $('inboxContent').classList.toggle('hidden',section!=='inbox');
+ $('heroSection').classList.toggle('hidden',section!=='hero');
+ $('usersSection').classList.toggle('hidden',section!=='users');
+ $('operationsSection').classList.toggle('hidden',!ops);
+ document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b.dataset.section===section));
+ if(ops){
+  const frame=$('operationsFrame');
+  if(!frame.dataset.ready){
+   frame.dataset.ready='1';
+   frame.src='/operations.html?embedded=1#'+encodeURIComponent(section);
+  }else if(frame.contentWindow){
+   frame.contentWindow.postMessage({type:'greenora-switch-section',section:section},location.origin);
+  }
+ }
+}
+</script></body></html>

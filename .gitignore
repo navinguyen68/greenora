@@ -1,0 +1,6 @@
+data/
+*.sqlite
+*.sqlite-*
+.env
+__pycache__/
+public/uploads/

@@ -1,0 +1,6 @@
+GREENORA V34 Render demo
+Language: Python 3
+Build Command: pip install -r requirements.txt
+Start Command: python server.py
+Environment: GREENORA_ADMIN_USER (your username), GREENORA_ADMIN_PASSWORD (unique 16+ char password), GREENORA_SECURE_COOKIE=1
+Free instance has ephemeral SQLite storage: demo only; no real guest data or payments.
